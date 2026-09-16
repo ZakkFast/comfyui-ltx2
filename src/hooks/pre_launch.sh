@@ -64,7 +64,16 @@ if [ -f "$PERSIST_ROOT/custom_nodes/two_stage_resolution.py" ]; then
     cp -f "$PERSIST_ROOT/custom_nodes/two_stage_resolution.py" "$COMFYUI_DIR/custom_nodes/two_stage_resolution.py"
 fi
 
-mkdir -p "$PERSIST_ROOT/models/checkpoints/ltx23" "$PERSIST_ROOT/models/loras/ltx23"
+mkdir -p "$PERSIST_ROOT/models/checkpoints/ltx23" "$PERSIST_ROOT/models/loras/ltx23" "$PERSIST_ROOT/models/loras/ltx2"
 if [ -f "$PERSIST_ROOT/models/checkpoints/ltx-2.3-22b-dev-fp8.safetensors" ]; then
     ln -sfn ../ltx-2.3-22b-dev-fp8.safetensors "$PERSIST_ROOT/models/checkpoints/ltx23/ltx-2.3-22b-dev-fp8.safetensors"
+fi
+for name in Best_FaceID_v1.0_LoRA.safetensors Best_FaceID_CharacterSheet_v1.0_LoRA.safetensors edit_anything_v1.1_r256.safetensors ltx-2.3-22b-ic-lora-union-control-ref0.5.safetensors; do
+    if [ -f "$PERSIST_ROOT/models/loras/ltx23/$name" ]; then
+        ln -sfn "ltx23/$name" "$PERSIST_ROOT/models/loras/$name"
+    fi
+done
+R105="ltx-2.3-22b-distilled-lora-dynamic_fro09_avg_rank_105_bf16.safetensors"
+if [ -f "$PERSIST_ROOT/models/loras/ltx23/$R105" ]; then
+    ln -sfn "../ltx23/$R105" "$PERSIST_ROOT/models/loras/ltx2/$R105"
 fi
