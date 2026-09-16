@@ -1,6 +1,6 @@
 {
   "template_repo": "https://github.com/ZakkFast/comfyui-ltx2.git",
-  "branch": "main",
+  "branch": "zakk-ltx-test",
   "provisioning_mode": "registry",
   "flags": {
     "download_ltx23": { "copy": ["."], "default": true },
