@@ -1,5 +1,5 @@
 {
-  "template_repo": "https://github.com/Hearmeman24/comfyui-ltx2.git",
+  "template_repo": "https://github.com/ZakkFast/comfyui-ltx2.git",
   "branch": "main",
   "provisioning_mode": "registry",
   "flags": {
