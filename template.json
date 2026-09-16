@@ -1,10 +1,10 @@
 {
-  "template_repo": "https://github.com/Hearmeman24/comfyui-ltx2.git",
-  "branch": "main",
+  "template_repo": "https://github.com/ZakkFast/comfyui-ltx2.git",
+  "branch": "zakk-ltx-test",
   "provisioning_mode": "registry",
   "flags": {
     "download_ltx23": { "copy": ["."], "default": true },
-    "download_ltx25": { "copy": ["LTX2.5"], "default": false }
+    "download_ltx25": { "copy": ["LTX2.5"], "default": true }
   },
   "deprecated_flags": {
     "download_ltx2_19b": "LTX-2 19B is retired. Use download_ltx23 (on by default) or download_ltx25. Models already on your network volume are untouched; they simply stop being downloaded onto new pods.",
@@ -14,9 +14,22 @@
   "custom_nodes": {
     "target": "image",
     "repos": [
+      "https://github.com/Lightricks/ComfyUI-LTXVideo.git",
+      "https://github.com/kijai/ComfyUI-KJNodes.git",
+      "https://github.com/rgthree/rgthree-comfy.git",
+      "https://github.com/willmiao/ComfyUI-Lora-Manager.git",
+      "https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite.git",
+      "https://github.com/kijai/ComfyUI-MelBandRoFormer.git",
+      "https://github.com/yolain/ComfyUI-Easy-Use.git",
+      "https://github.com/city96/ComfyUI-GGUF.git",
+      "https://github.com/comfyorg/comfyui-controlnet-aux.git",
+      "https://github.com/cubiq/ComfyUI_essentials.git",
+      "https://github.com/crystian/ComfyUI-Crystools.git",
+      "https://github.com/1038lab/ComfyUI-RMBG.git",
+      "https://github.com/giriss/comfy-image-saver.git",
+      "https://github.com/Comfy-Org/Nvidia_RTX_Nodes_ComfyUI.git",
       "https://github.com/WhatDreamsCost/WhatDreamsCost-ComfyUI.git",
-      "https://github.com/alisson-anjos/ComfyUI-BFSNodes.git",
-      "https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite.git"
+      "https://github.com/alisson-anjos/ComfyUI-BFSNodes.git"
     ]
   },
   "sage": true
