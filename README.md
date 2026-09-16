@@ -4,7 +4,7 @@ RunPod-oriented ComfyUI template for LTX-2.x.
 
 ## Zakk test branch
 
-This branch is intentionally kept separate from `main` while the expanded workflow set is tested.
+Build/deploy `zakk-ltx-test` while this setup is being validated. The entrypoint is pinned to the same branch so a test pod will not overwrite itself with `main` during boot.
 
 ### What boots by default
 
