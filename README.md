@@ -28,3 +28,7 @@ Set `HF_TOKEN` and make sure the account has accepted the LTX-2.5 gated model te
 ### Persistence
 
 The community workflow ZIP is fetched only when its persistent install marker is absent. Models and workflows on the network volume are reused on later boots.
+
+### NVIDIA RTX Video Super Resolution
+
+The community graphs reference `RTXVideoSuperResolution`, so its node pack is installed. NVIDIA's current VFX package has open Linux/driver compatibility reports; if that specific optional upscale stage misbehaves on a RunPod image, bypass the RTX upscale node while leaving the LTX generation stages intact.
