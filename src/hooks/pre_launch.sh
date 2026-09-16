@@ -30,6 +30,7 @@ if [ ! -f "$COMMUNITY_MARKER" ]; then
         python3 - "$WORKFLOW_DIR/Community-LTX-2.3" <<'PY'
 import json, pathlib, sys
 root = pathlib.Path(sys.argv[1])
+slash = chr(92)
 for path in root.glob('*.json'):
     try:
         data = json.loads(path.read_text(encoding='utf-8'))
@@ -37,7 +38,7 @@ for path in root.glob('*.json'):
         continue
     def fix(value):
         if isinstance(value, str):
-            return value.replace('ltx23\\\\', 'ltx23/').replace('MelBandRoformer\\\\', 'MelBandRoformer/')
+            return value.replace('ltx23' + slash, 'ltx23/').replace('MelBandRoformer' + slash, 'MelBandRoformer/')
         if isinstance(value, list):
             return [fix(x) for x in value]
         if isinstance(value, dict):
