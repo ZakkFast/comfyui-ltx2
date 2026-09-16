@@ -1,27 +1,9 @@
 #!/usr/bin/env bash
-# Image entrypoint (baked into the image; changing it needs a vN tag).
-# Dual sync, then hand off to the shared runtime:
-#
-#   1. sync the template repo   /comfyui-ltx2      -> origin/main
-#   2. read runtime_ref from    /comfyui-ltx2/pins.json
-#   3. sync the shared runtime  /comfyui-runtime   -> that pinned ref
-#   4. exec bash /comfyui-runtime/src/start.sh /comfyui-ltx2
-#
-# Nothing is copied to / (CONTRACTS.md section 12.1); the runtime scripts run
-# in place from /comfyui-runtime.
-#
-# On container restarts the writable layer persists, so a plain `git clone`
-# would refuse to clone into the existing dir; always fetch + hard-reset.
-# Each sync runs in a retry loop with backoff: a transient DNS/network blip
-# at boot used to abort the old set -e entrypoint and kill the container. If
-# GitHub stays unreachable we boot from whatever repo copy is already on disk
-# rather than bricking the pod, and abort only when there is no copy at all.
-# The DNS preflight naming RunPod's Global Networking setting lives in the
-# shared start.sh; it is not duplicated here.
+# Image entrypoint (baked into the image; changing it needs a new image tag).
 
 TEMPLATE_DIR=/comfyui-ltx2
-TEMPLATE_URL=https://github.com/Hearmeman24/comfyui-ltx2.git
-TEMPLATE_BRANCH=main    # ltx2's default branch is main, not master
+TEMPLATE_URL=https://github.com/ZakkFast/comfyui-ltx2.git
+TEMPLATE_BRANCH=main
 RUNTIME_DIR=/comfyui-runtime
 RUNTIME_URL=https://github.com/Hearmeman24/comfyui-runtime.git
 
@@ -51,21 +33,13 @@ if [ -z "$ok" ]; then
     fi
 fi
 
-# The runtime commit this template boots against, pinned in pins.json
-# (CONTRACTS.md section 6). Unreadable pins fall back to the runtime's main
-# branch, loudly: an unpinned runtime is better than a dead pod.
 RUNTIME_REF="$(python3 -c "import json, sys; print(json.load(open(sys.argv[1]))['runtime_ref'])" "$TEMPLATE_DIR/pins.json" 2>/dev/null)"
 if [ -z "$RUNTIME_REF" ]; then
     echo "⚠️  Could not read runtime_ref from $TEMPLATE_DIR/pins.json. Falling back to the runtime's main branch (UNPINNED)."
     RUNTIME_REF=main
 fi
 
-# Tracks whether THIS boot created the runtime checkout. It decides which
-# fallback message is true when the pinned-ref fetch fails every retry: a kept
-# pre-existing checkout is potentially STALE, but a fresh clone left at main
-# HEAD is UNPINNED and NEWER than the pin.
 runtime_fresh_clone=""
-
 sync_runtime() {
     if [ ! -d "$RUNTIME_DIR/.git" ]; then
         rm -rf "$RUNTIME_DIR"
@@ -94,6 +68,25 @@ if [ -z "$ok" ]; then
         echo "❌ Could not clone $RUNTIME_URL after retries and no local copy exists. Aborting." >&2
         exit 1
     fi
+fi
+
+# Optional REDGraft LTX-2.5 checkpoint.
+# Reuse the runtime's existing CivitAI downloader instead of adding another downloader.
+# REDGraft is a diffusion model, while the shared downloader stores CivitAI checkpoints
+# under models/checkpoints, so expose it to UNETLoader with a lightweight symlink.
+if [ "${download_redgraft:-false}" = "true" ]; then
+    echo "🎬 REDGraft enabled; enabling the required LTX-2.5 model set"
+    export download_ltx25=true
+
+    REDGRAFT_VERSION_ID=3250230
+    case ",${CIVITAI_CHECKPOINTS:-}," in
+        *",${REDGRAFT_VERSION_ID},"*) ;;
+        *) export CIVITAI_CHECKPOINTS="${CIVITAI_CHECKPOINTS:+${CIVITAI_CHECKPOINTS},}${REDGRAFT_VERSION_ID}" ;;
+    esac
+
+    REDGRAFT_NAME="redgraftLTX25Fast2K_ltx25RedgraftNSFW.safetensors"
+    mkdir -p /workspace/ComfyUI/models/diffusion_models
+    ln -sfn "../checkpoints/${REDGRAFT_NAME}" "/workspace/ComfyUI/models/diffusion_models/${REDGRAFT_NAME}"
 fi
 
 exec bash /comfyui-runtime/src/start.sh /comfyui-ltx2
