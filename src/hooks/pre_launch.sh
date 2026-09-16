@@ -1,7 +1,6 @@
 # shellcheck shell=bash
 # pre_launch hook for comfyui-ltx2. This file is SOURCED by the shared runtime.
 
-# ComfyUI-LTXVideo currently needs kornia 0.8.2.
 if ! python3 -c "import kornia,sys; sys.exit(0 if kornia.__version__=='0.8.2' else 1)" 2>/dev/null; then
     echo "🔧 Pinning kornia==0.8.2 for ComfyUI-LTXVideo..."
     pip install "kornia==0.8.2" > /tmp/pip_kornia.log 2>&1 \
@@ -11,9 +10,6 @@ fi
 
 mkdir -p "$WORKFLOW_DIR/LTX-2.5" "$WORKFLOW_DIR/Community-LTX-2.3" "$PERSIST_ROOT/custom_nodes"
 
-# Ship the current official Lightricks 2.5 two-stage T2V/I2V workflow from the
-# installed ComfyUI-LTXVideo node pack. Keeping the source in that repo means
-# the workflow stays matched to the installed node implementation.
 OFFICIAL_25="$COMFYUI_DIR/custom_nodes/ComfyUI-LTXVideo/example_workflows/2.5/LTX-2.5_T2V_I2V_Two_Stage_Distilled.json"
 if [ -f "$OFFICIAL_25" ]; then
     cp -f "$OFFICIAL_25" "$WORKFLOW_DIR/LTX-2.5/LTX-2.5_T2V_I2V_Two_Stage_Distilled.json"
@@ -22,8 +18,6 @@ else
     report_warn "Official LTX-2.5 two-stage workflow missing from ComfyUI-LTXVideo"
 fi
 
-# Stefan Falkok/RuneXX LTX-2.3 exploration pack supplied by the user. Download
-# once to persistent storage, then keep the extracted workflows across pod restarts.
 COMMUNITY_MARKER="$WORKFLOW_DIR/Community-LTX-2.3/.stefan_v12_installed"
 COMMUNITY_URL="https://prompthero.com/api/ai-models/ltx-23-workflows--ltx-director-runexx-workflows-remade-by-stefan-falkok--nsfw-base-i2v-first-last-frame-controlnet-edit-add-audio--lipsync-foley-extended-video-2677668-download/ltx-23-workflows--ltx-director-runexx-workflows-remade-by-stefan-falkok--nsfw-base-i2v-first-last-frame-controlnet-edit-add-audio--lipsync-foley-extended-video-v12-ltx-director/file/2e1f7562-ed07-48a1-a305-cacecbde767d/download"
 if [ ! -f "$COMMUNITY_MARKER" ]; then
@@ -36,6 +30,7 @@ if [ ! -f "$COMMUNITY_MARKER" ]; then
         HELPER="$(find /tmp/ltx23-community -type f -name 'two_stage_resolution.py' | head -n1)"
         if [ -n "$HELPER" ]; then
             cp -f "$HELPER" "$PERSIST_ROOT/custom_nodes/two_stage_resolution.py"
+            cp -f "$HELPER" "$COMFYUI_DIR/custom_nodes/two_stage_resolution.py"
         fi
         touch "$COMMUNITY_MARKER"
         echo "✅ Community LTX-2.3 workflow pack installed"
@@ -45,8 +40,11 @@ if [ ! -f "$COMMUNITY_MARKER" ]; then
     fi
 fi
 
-# The community workflows were authored on Windows and reference a few models
-# through ltx23\\... subfolders. Provide those paths without duplicating weights.
+# If the helper already lives on the persistent volume, make sure this image sees it.
+if [ -f "$PERSIST_ROOT/custom_nodes/two_stage_resolution.py" ]; then
+    cp -f "$PERSIST_ROOT/custom_nodes/two_stage_resolution.py" "$COMFYUI_DIR/custom_nodes/two_stage_resolution.py"
+fi
+
 mkdir -p "$PERSIST_ROOT/models/checkpoints/ltx23" "$PERSIST_ROOT/models/loras/ltx23"
 if [ -f "$PERSIST_ROOT/models/checkpoints/ltx-2.3-22b-dev-fp8.safetensors" ]; then
     ln -sfn ../ltx-2.3-22b-dev-fp8.safetensors "$PERSIST_ROOT/models/checkpoints/ltx23/ltx-2.3-22b-dev-fp8.safetensors"
