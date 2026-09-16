@@ -19,7 +19,8 @@ else
 fi
 
 COMMUNITY_MARKER="$WORKFLOW_DIR/Community-LTX-2.3/.stefan_v12_installed"
-COMMUNITY_URL="https://prompthero.com/api/ai-models/ltx-23-workflows--ltx-director-runexx-workflows-remade-by-stefan-falkok--nsfw-base-i2v-first-last-frame-controlnet-edit-add-audio--lipsync-foley-extended-video-2677668-download/ltx-23-workflows--ltx-director-runexx-workflows-remade-by-stefan-falkok--nsfw-base-i2v-first-last-frame-controlnet-edit-add-audio--lipsync-foley-extended-video-v12-ltx-director/file/2e1f7562-ed07-48a1-a305-cacecbde767d/download"
+DEFAULT_COMMUNITY_URL="https://prompthero.com/api/ai-models/ltx-23-workflows--ltx-director-runexx-workflows-remade-by-stefan-falkok--nsfw-base-i2v-first-last-frame-controlnet-edit-add-audio--lipsync-foley-extended-video-2677668-download/ltx-23-workflows--ltx-director-runexx-workflows-remade-by-stefan-falkok--nsfw-base-i2v-first-last-frame-controlnet-edit-add-audio--lipsync-foley-extended-video-v12-ltx-director/file/2e1f7562-ed07-48a1-a305-cacecbde767d/download"
+COMMUNITY_URL="${LTX23_WORKFLOW_PACK_URL:-$DEFAULT_COMMUNITY_URL}"
 if [ ! -f "$COMMUNITY_MARKER" ]; then
     echo "📦 Installing LTX-2.3 community workflow pack..."
     rm -rf /tmp/ltx23-community /tmp/ltx23-community.zip
