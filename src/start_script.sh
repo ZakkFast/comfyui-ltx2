@@ -3,7 +3,7 @@
 
 TEMPLATE_DIR=/comfyui-ltx2
 TEMPLATE_URL=https://github.com/ZakkFast/comfyui-ltx2.git
-TEMPLATE_BRANCH=main
+TEMPLATE_BRANCH=zakk-ltx-test
 RUNTIME_DIR=/comfyui-runtime
 RUNTIME_URL=https://github.com/Hearmeman24/comfyui-runtime.git
 
