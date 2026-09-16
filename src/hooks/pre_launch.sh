@@ -27,6 +27,24 @@ if [ ! -f "$COMMUNITY_MARKER" ]; then
     if curl -fL --retry 3 --retry-delay 2 "$COMMUNITY_URL" -o /tmp/ltx23-community.zip \
        && python3 -m zipfile -e /tmp/ltx23-community.zip /tmp/ltx23-community; then
         find /tmp/ltx23-community -type f -name '*.json' -exec cp -f {} "$WORKFLOW_DIR/Community-LTX-2.3/" \;
+        python3 - "$WORKFLOW_DIR/Community-LTX-2.3" <<'PY'
+import json, pathlib, sys
+root = pathlib.Path(sys.argv[1])
+for path in root.glob('*.json'):
+    try:
+        data = json.loads(path.read_text(encoding='utf-8'))
+    except Exception:
+        continue
+    def fix(value):
+        if isinstance(value, str):
+            return value.replace('ltx23\\\\', 'ltx23/').replace('MelBandRoformer\\\\', 'MelBandRoformer/')
+        if isinstance(value, list):
+            return [fix(x) for x in value]
+        if isinstance(value, dict):
+            return {k: fix(v) for k, v in value.items()}
+        return value
+    path.write_text(json.dumps(fix(data), ensure_ascii=False), encoding='utf-8')
+PY
         HELPER="$(find /tmp/ltx23-community -type f -name 'two_stage_resolution.py' | head -n1)"
         if [ -n "$HELPER" ]; then
             cp -f "$HELPER" "$PERSIST_ROOT/custom_nodes/two_stage_resolution.py"
@@ -40,7 +58,6 @@ if [ ! -f "$COMMUNITY_MARKER" ]; then
     fi
 fi
 
-# If the helper already lives on the persistent volume, make sure this image sees it.
 if [ -f "$PERSIST_ROOT/custom_nodes/two_stage_resolution.py" ]; then
     cp -f "$PERSIST_ROOT/custom_nodes/two_stage_resolution.py" "$COMFYUI_DIR/custom_nodes/two_stage_resolution.py"
 fi
