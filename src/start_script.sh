@@ -70,14 +70,12 @@ if [ -z "$ok" ]; then
     fi
 fi
 
-# Optional REDGraft LTX-2.5 checkpoint.
-# Reuse the runtime's existing CivitAI downloader instead of adding another downloader.
-# REDGraft is a diffusion model, while the shared downloader stores CivitAI checkpoints
-# under models/checkpoints, so expose it to UNETLoader with a lightweight symlink.
+# REDGraft is intentionally independent from the LTX-2.5 support-model download.
+# LTX-2.5 support models are provisioned by download_ltx25 (on by default); this
+# flag only adds the optional REDGraft transformer so other 2.5 checkpoints can
+# be swapped in without changing the rest of the workflow setup.
 if [ "${download_redgraft:-false}" = "true" ]; then
-    echo "🎬 REDGraft enabled; enabling the required LTX-2.5 model set"
-    export download_ltx25=true
-
+    echo "🎬 REDGraft checkpoint download enabled"
     REDGRAFT_VERSION_ID=3250230
     case ",${CIVITAI_CHECKPOINTS:-}," in
         *",${REDGRAFT_VERSION_ID},"*) ;;
