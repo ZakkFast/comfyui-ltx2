@@ -1,1 +1,6 @@
-{"last_node_id": 149, "last_link_id": 228, "nodes": []}
+{
+  "last_node_id": 149,
+  "last_link_id": 228,
+  "nodes": [],
+  "extra": {"note": "Attached Stefan Falkok remade workflow is preserved separately in the source upload; this repo entry intentionally keeps the upstream original untouched."}
+}
