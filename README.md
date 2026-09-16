@@ -27,7 +27,7 @@ Set `HF_TOKEN` and make sure the account has accepted the LTX-2.5 gated model te
 
 ### Persistence
 
-The community workflow ZIP is fetched only when its persistent install marker is absent. Models and workflows on the network volume are reused on later boots.
+The community workflow ZIP is fetched only when its persistent install marker is absent. Models and workflows on the network volume are reused on later boots. `LTX23_WORKFLOW_PACK_URL` can override the public pack URL if that host ever changes.
 
 ### NVIDIA RTX Video Super Resolution
 
